@@ -1,0 +1,78 @@
+﻿private void _BtnPostAsset_Click(object sender, RoutedEventArgs e)
+{
+	Dictionary<string, object> dictionary = new Dictionary<string, object>();
+	Dictionary<string, object> dicttmp;
+
+	string url = @"https://exp.orion.organicity.eu/v2/entities", jsonContent = "", retval = "";
+
+	string dt = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+	string ExperimenterId = _TbExperimenterId.Text; //"547f5e82-c957-486d-87d3-8a9fa4484ac6";
+	string ExperimentId = _TbExperimentId.Text; //"58c026f00922ba0a1a7cc5ea";
+	string AppplicationId = _TbApplicationId.Text; //"58c027220922ba0a1a7cc611";
+	string AccessToken = _AccessToken;
+	string AssetId = _TbPostAsset2.Text; //((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString();
+
+	dictionary["id"] = "urn:oc:entity:experimenters:" + ExperimenterId + ":" + ExperimentId + ":" + AssetId;
+	dictionary["type"] = "urn:oc:entityType:demo";
+
+	dicttmp = new Dictionary<string, object>();
+	dicttmp["type"] = "geo:point";
+	dicttmp["value"] = "51.49901052,-0.17933115";
+	dictionary["location"] = dicttmp;
+
+	dicttmp = new Dictionary<string, object>();
+	dicttmp["type"] = "urn:oc:attributeType:ISO8601";
+	dicttmp["value"] = dt;
+	dictionary["TimeInstant"] = dicttmp;
+
+	dicttmp = new Dictionary<string, object>();
+	dicttmp["type"] = "urn:oc:attributeType:batteryLevel";
+	dicttmp["value"] = "80";
+	dictionary["Battery"] = dicttmp;
+
+	dicttmp = new Dictionary<string, object>();
+	dicttmp["type"] = "urn:oc:attributeType:pressure:atmospheric";
+	dicttmp["value"] = "1";
+	dictionary["Pressure"] = dicttmp;
+
+	jsonContent = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+	_TbJSONRequestExperimenter.Text = jsonContent;
+
+	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+	request.Method = "POST";
+
+	System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+	Byte[] byteArray = encoding.GetBytes(jsonContent);
+
+	request.ContentLength = byteArray.Length;
+	request.ContentType = @"application/json";
+	request.Accept = @"application/json";
+
+	request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + AccessToken);
+	request.Headers["X-Organicity-Application"] = AppplicationId;
+	request.Headers["X-Organicity-Experiment"] = ExperimentId;
+
+	using (Stream dataStream = request.GetRequestStream())
+	{ dataStream.Write(byteArray, 0, byteArray.Length); }
+
+	try
+	{
+		HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+			retval = reader.ReadToEnd() + "OK";
+		}
+	}
+	catch (WebException ex)
+	{
+		WebResponse errorResponse = ex.Response;
+		using (Stream responseStream = errorResponse.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+			retval = reader.ReadToEnd();
+		}
+	}
+
+	_TbResults.Text = retval;
+}

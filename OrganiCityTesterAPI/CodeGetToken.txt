@@ -1,0 +1,55 @@
+﻿private void _BtnGetToken_Click(object sender, RoutedEventArgs e)
+{
+	string url = @"https://accounts.organicity.eu/realms/organicity/protocol/openid-connect/token", retval = "";
+
+	string dt = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+	string ClientId = _TbClientId.Text;// "6c005c84-0b81-4295-9ee6-bd50968e7bc5";
+	string ClientSecret = _TbClientSecret.Text;//"a0916433-f469-43a2-8798-1a3eb7747947";
+
+	//POST https://accounts.organicity.eu/realms/organicity/protocol/openid-connect/token HTTP/1.1
+	//Host: accounts.organicity.eu
+	//Authorization: Basic <BASE64_ENCODE(6c005c84-0b81-4295-9ee6-bd50968e7bc5:a0916433-f469-43a2-8798-1a3eb7747947)>
+	//Content-Type: application/x-www-form-urlencoded
+	
+	//grant_type=client_credentials
+            
+	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+	request.Method = "POST";
+	request.ProtocolVersion = HttpVersion.Version11;
+
+	//request.ContentLength = byteArray.Length;
+	request.ContentType = @"application/x-www-form-urlencoded";
+	request.Host = "accounts.organicity.eu";
+
+	request.Headers.Add(HttpRequestHeader.Authorization, "Basic " + System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(ClientId + ":" + ClientSecret))); //< BASE64_ENCODE(" + ClientId+ ":" + ClientSecret+")>");
+
+	System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+	Byte[] byteArray = encoding.GetBytes("grant_type=client_credentials");
+
+	using (Stream dataStream = request.GetRequestStream())
+	{ dataStream.Write(byteArray, 0, byteArray.Length); }
+
+	try
+	{
+		HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+			retval = reader.ReadToEnd();
+		}
+	}
+	catch (WebException ex)
+	{
+		WebResponse errorResponse = ex.Response;
+		using (Stream responseStream = errorResponse.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+			retval = reader.ReadToEnd();
+		}
+		_TbToken.Text = "ERROR";
+	}
+
+	JObject retjobj = JObject.Parse(retval);
+	_AccessToken =  retjobj["access_token"].ToString();
+	_TbToken.Text = retval;
+}

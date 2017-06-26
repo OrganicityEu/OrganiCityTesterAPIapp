@@ -1,0 +1,26 @@
+﻿private void _BtnGetAssets_Click(object sender, RoutedEventArgs e)
+{
+	string retval = "";
+
+	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(@"https://discovery.organicity.eu/v0/assets/sites/london");
+	try
+	{
+		WebResponse response = request.GetResponse();
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+			retval = reader.ReadToEnd();
+		}
+	}
+	catch (WebException ex)
+	{
+		WebResponse errorResponse = ex.Response;
+		using (Stream responseStream = errorResponse.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+			retval = reader.ReadToEnd();
+		}
+	}
+	
+	_TbGetAssets.Text = retval.Replace("{\"id\"", "\n{\"id\"");
+}

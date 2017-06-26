@@ -1,0 +1,44 @@
+﻿private void _BtnDeleteAsset_Click(object sender, RoutedEventArgs e)
+{
+	string assetid = _TbDeleteAssetId.Text;
+	string type = "urn:oc:entityType:demo";
+
+	string url = @"https://exp.orion.organicity.eu/v2/entities", retval = "";
+	
+	string ExperimenterId = _TbExperimenterId.Text; //"547f5e82-c957-486d-87d3-8a9fa4484ac6";
+	string ExperimentId = _TbExperimentId.Text; //"58c026f00922ba0a1a7cc5ea";
+	string AppplicationId = _TbApplicationId.Text; //"58c027220922ba0a1a7cc611";
+	string AccessToken = _AccessToken;
+            
+	url += @"/urn:oc:entity:experimenters:" + ExperimenterId + ":" + ExperimentId + ":" + assetid + "?type=" + type;
+
+	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+	request.Method = "DELETE";
+
+	request.Accept = @"application/json";
+
+	request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + AccessToken);
+	request.Headers["X-Organicity-Application"] = AppplicationId;
+	request.Headers["X-Organicity-Experiment"] = ExperimentId;
+
+	try
+	{
+		HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+			retval = reader.ReadToEnd() + "OK";
+		}
+	}
+	catch (WebException ex)
+	{
+		WebResponse errorResponse = ex.Response;
+		using (Stream responseStream = errorResponse.GetResponseStream())
+		{
+			StreamReader reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+			retval = reader.ReadToEnd();
+		}
+	}
+	
+	_TbResults.Text = retval;
+}
