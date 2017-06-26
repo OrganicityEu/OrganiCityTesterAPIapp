@@ -9,4 +9,4 @@ OrganiCity Tester API application is a Windows application which provides the ba
 The necessary file to execute the application are located into the OrganiCityTesterAPI folder. To run the application, just double click on "OrganiCityClient.exe" file.
 
 ## Using Tester ##
-
+![Alt text](/Images/screen1_functionality.png?raw=true "OrganiCity Tester API functionality")
