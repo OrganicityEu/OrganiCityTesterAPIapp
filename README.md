@@ -22,3 +22,5 @@ In the second tab, the user can generate random assets by pressing the “Genera
 The third tab illustrates the asset retrieval from EaaS API.
 
 ![Alt text](/Images/screen3.png?raw=true "OrganiCity EaaS API")
+
+Note: This application provides only examples of the OrganiCity APIs and it cannot be used as a tool to fulfil the requirements of an experiment.
