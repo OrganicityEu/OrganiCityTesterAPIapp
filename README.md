@@ -14,5 +14,5 @@ The following figures illustrates the functionalities of OrganiCity Tester API a
 In the first tab, the user has to follow three main steps to post a new asset to a specific experiment. In the first step, the user is able to request and get an access token by providing Clientid, ClientSecret. Then, the user has to fill the details of the experiment (ExperimenterId, ExperimentId, ApplicationId). In the last step (i.e. step 3), the user can post a new asset to the specific experiment by pressing the “Post Random Asset” button.
 
 ![Alt text](/Images/screen1_functionality.png?raw=true "OrganiCity Tester API main functionality")
-![Alt text](/Images/screen2.png?raw=true "OrganiCity data structure")
+![Alt text](/Images/screen2_example.png?raw=true "OrganiCity data structure")
 ![Alt text](/Images/screen3.png?raw=true "OrganiCity EaaS API")
